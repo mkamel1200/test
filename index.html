@@ -3,94 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trial Designer</title>
+  <title>Patient Stipend Tool</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    .draggable {
-      cursor: grab;
-    }
-    .dropzone {
-      min-height: 200px;
-      border: 2px dashed #ccc;
-      padding: 1rem;
-    }
+    .draggable { cursor: grab; }
+    .dropzone { min-height: 200px; border: 2px dashed #ccc; padding: 1rem; }
+    .hidden { display: none; }
   </style>
 </head>
 <body class="bg-gray-100 font-sans">
   <div class="max-w-5xl mx-auto p-6">
-    <h1 class="text-3xl font-bold text-center text-blue-800 mb-6">🧪 Trial Designer</h1>
+    <h1 class="text-3xl font-bold text-center text-blue-800 mb-6">💊 Patient Stipend Calculator</h1>
 
-    <!-- Drag items -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
-      <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="30">
-        💉 Add Infusion (Invasiveness +2)
+    <!-- Main Calculator Section -->
+    <div id="calculator" class="mb-8">
+      <div class="grid grid-cols-2 gap-4">
+        <label>Invasiveness:
+          <select id="invasiveness" class="w-full p-2 border rounded">
+            <option value="0">Purely Observational</option>
+            <option value="1">Venepuncture / Topical</option>
+            <option value="2">Biopsy / Lumbar Puncture</option>
+            <option value="3">Surgical / First-in-Human</option>
+          </select>
+        </label>
+        <label>Per-Visit Duration:
+          <select id="duration" class="w-full p-2 border rounded">
+            <option value="0">&lt;1h</option>
+            <option value="1">1–4h</option>
+            <option value="2">4–8h</option>
+            <option value="3">≥24h</option>
+          </select>
+        </label>
+        <label>Study Duration:
+          <select id="study" class="w-full p-2 border rounded">
+            <option value="0">&lt;1 Month</option>
+            <option value="1">1–3 Months</option>
+            <option value="2">3–6 Months</option>
+            <option value="3">&gt;6 Months</option>
+          </select>
+        </label>
+        <label>Frequency:
+          <select id="frequency" class="w-full p-2 border rounded">
+            <option value="0">≤1/month</option>
+            <option value="1">2–3/month</option>
+            <option value="2">4–7/month</option>
+            <option value="3">≥8/month</option>
+          </select>
+        </label>
+        <label>Risk:
+          <select id="risk" class="w-full p-2 border rounded">
+            <option value="0">Minimal</option>
+            <option value="1">Low</option>
+            <option value="2">Moderate</option>
+            <option value="3">High / Unknown</option>
+          </select>
+        </label>
+        <label>Logistics:
+          <select id="logistics" class="w-full p-2 border rounded">
+            <option value="0">None</option>
+            <option value="1">Fasting / eDiary</option>
+            <option value="2">Fasting + Childcare</option>
+            <option value="3">Home Prep + Device</option>
+          </select>
+        </label>
+        <label>Radiation:
+          <select id="radiation" class="w-full p-2 border rounded">
+            <option value="0">None</option>
+            <option value="1">Low dose imaging</option>
+            <option value="2">Multiple scans</option>
+            <option value="3">Frequent high-dose</option>
+          </select>
+        </label>
+        <label>Therapeutic Area:
+          <select id="tbm" class="w-full p-2 border rounded">
+            <option value="0.75">Oncology / Life-Threatening</option>
+            <option value="1.0">Chronic Condition</option>
+            <option value="1.25">Healthy Volunteer / Vaccine</option>
+          </select>
+        </label>
       </div>
-      <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="20">
-        🧪 Add Imaging (Radiation +1)
-      </div>
-      <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="15">
-        ⏱️ Long Visit (Duration +1)
-      </div>
-      <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="10">
-        🧭 Remote Diary (Logistics +1)
-      </div>
-      <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="25">
-        🚗 Travel >1hr (Travel Burden +2)
+      <div class="mt-6 text-center">
+        <button onclick="calculateStipend()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">Calculate</button>
+        <p class="mt-4 text-xl text-green-800 font-bold" id="output">Stipend: $0</p>
       </div>
     </div>
 
-    <!-- Drop zone -->
-    <div class="dropzone bg-white rounded shadow p-6 text-center">
-      <p class="text-gray-500">Drag & drop trial components here to build your study</p>
-      <div id="items" class="mt-4 space-y-2"></div>
+    <!-- Button to switch to Game Mode -->
+    <div class="text-center mb-6">
+      <button onclick="toggleGame(true)" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">🎮 Try Trial Designer Mode</button>
     </div>
 
-    <!-- Output -->
-    <div class="mt-6 text-center">
-      <p class="text-xl font-semibold text-green-700">Estimated Stipend:</p>
-      <p id="stipend" class="text-3xl font-bold text-green-900">$0</p>
-      <p id="comment" class="mt-2 text-sm italic text-gray-600"></p>
+    <!-- Game Mode -->
+    <div id="game" class="hidden">
+      <h2 class="text-2xl font-bold text-purple-800 mb-4">Trial Designer Mode</h2>
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="30">💉 Infusion</div>
+        <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="20">🧪 Imaging</div>
+        <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="25">⏱️ Long Visit</div>
+        <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="15">📓 eDiary</div>
+        <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="10">🛏️ Overnight Stay</div>
+        <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="20">🚗 Travel >1hr</div>
+      </div>
+      <div class="dropzone bg-white rounded shadow p-6 text-center">
+        <p class="text-gray-500">Drag & drop trial components here</p>
+        <div id="items" class="mt-4 space-y-2"></div>
+      </div>
+      <div class="mt-6 text-center">
+        <p class="text-xl font-semibold text-green-700">Estimated Stipend:</p>
+        <p id="stipend" class="text-3xl font-bold text-green-900">$0</p>
+        <p id="comment" class="mt-2 text-sm italic text-gray-600"></p>
+        <button onclick="toggleGame(false)" class="mt-4 bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded">🔙 Back to Calculator</button>
+      </div>
     </div>
   </div>
 
   <script>
-    let total = 0;
-    const dropzone = document.querySelector(".dropzone");
-    const stipendOutput = document.getElementById("stipend");
-    const comment = document.getElementById("comment");
-    const itemsDiv = document.getElementById("items");
+    function calculateStipend() {
+      const I = parseInt(document.getElementById("invasiveness").value);
+      const D = parseInt(document.getElementById("duration").value);
+      const S = parseInt(document.getElementById("study").value);
+      const F = parseInt(document.getElementById("frequency").value);
+      const R = parseInt(document.getElementById("risk").value);
+      const L = parseInt(document.getElementById("logistics").value);
+      const Rad = parseInt(document.getElementById("radiation").value);
+      const TBM = parseFloat(document.getElementById("tbm").value);
 
+      const stipend = Math.round((25 + 15*I + 30*D + 5*S + 5*F + 10*R + 10*L + 10*Rad) * TBM);
+      document.getElementById("output").textContent = `Stipend: $${stipend}`;
+    }
+
+    function toggleGame(showGame) {
+      document.getElementById("calculator").classList.toggle("hidden", showGame);
+      document.getElementById("game").classList.toggle("hidden", !showGame);
+    }
+
+    let total = 0;
     document.querySelectorAll(".draggable").forEach(el => {
       el.addEventListener("dragstart", e => {
-        e.dataTransfer.setData("text/plain", el.outerHTML);
         e.dataTransfer.setData("value", el.dataset.value);
+        e.dataTransfer.setData("text", el.textContent);
       });
     });
-
-    dropzone.addEventListener("dragover", e => {
+    document.querySelector(".dropzone").addEventListener("dragover", e => e.preventDefault());
+    document.querySelector(".dropzone").addEventListener("drop", e => {
       e.preventDefault();
-      dropzone.classList.add("border-blue-400");
+      const val = parseInt(e.dataTransfer.getData("value"));
+      const label = e.dataTransfer.getData("text");
+      document.getElementById("items").insertAdjacentHTML("beforeend", `<div>${label}</div>`);
+      total += val;
+      document.getElementById("stipend").textContent = `$${total}`;
+      document.getElementById("comment").textContent = total < 100 ? "Consider justifying stipend" : total < 175 ? "Stipend looks reasonable" : "IRB may flag this";
     });
-
-    dropzone.addEventListener("dragleave", () => {
-      dropzone.classList.remove("border-blue-400");
-    });
-
-    dropzone.addEventListener("drop", e => {
-      e.preventDefault();
-      const value = parseInt(e.dataTransfer.getData("value"));
-      const html = e.dataTransfer.getData("text/plain");
-      itemsDiv.insertAdjacentHTML("beforeend", html);
-      total += value;
-      updateStipend();
-    });
-
-    function updateStipend() {
-      stipendOutput.textContent = `$${total}`;
-      if (total < 75) comment.textContent = "💡 Consider more trial burden to justify stipend.";
-      else if (total < 150) comment.textContent = "✅ Moderate burden, stipend looks aligned.";
-      else comment.textContent = "⚠️ High burden — ensure IRB justification is solid.";
-    }
   </script>
 </body>
 </html>
