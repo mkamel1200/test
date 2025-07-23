@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Patient Stipend Tool</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body{background:#f4f7fa}
-    .card{background:#fff;border-radius:.75rem;box-shadow:0 4px 10px rgba(0,0,0,.05)}
-    .step{display:none}.active{display:block}.pill{cursor:pointer}
-    .tile{@apply cursor-pointer p-3 border rounded-lg text-sm flex items-center gap-2}
-    .tile[data-picked='true']{@apply bg-blue-50 border-blue-400}
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Patient Stipend Tool</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+ body{background:#f4f7fa}
+ .card{background:#fff;border-radius:.75rem;box-shadow:0 4px 10px rgba(0,0,0,.05)}
+ .step{display:none}.active{display:block}.pill{cursor:pointer}
+ .tile{@apply cursor-pointer p-3 border rounded-lg text-sm flex items-center gap-2}
+ .tile[data-picked='true']{@apply bg-blue-50 border-blue-400}
+</style>
 </head>
 <body class="font-sans text-gray-800">
 <div class="max-w-4xl mx-auto p-6">
 
-  <!-- =========  HEADER  ========= -->
+  <!-- HEADER -->
   <h1 class="text-3xl font-bold text-center text-blue-800 mb-8">
-    💊 Patient Stipend Calculator
+    💊 Patient Stipend Calculator
   </h1>
 
-  <!-- =========  BASIC CALCULATOR  ========= -->
+  <!-- BASIC CALCULATOR -->
   <div id="calcCard" class="card p-6 mb-8">
     <div class="grid grid-cols-2 gap-4">
-      <!-- exact chart‑aligned dropdowns -->
+      <!-- burden dropdowns -->
       <label>Invasiveness
         <select id="I" class="w-full p-2 border rounded">
           <option value="0">Purely observational</option>
@@ -36,57 +36,45 @@
       </label>
       <label>Per‑visit Duration
         <select id="D" class="w-full p-2 border rounded">
-          <option value="0">&lt;1 h</option>
-          <option value="1">1‑4 h</option>
-          <option value="2">4‑8 h</option>
-          <option value="3">≥24 h / overnight</option>
+          <option value="0">&lt;1 h</option><option value="1">1‑4 h</option>
+          <option value="2">4‑8 h</option><option value="3">≥24 h / overnight</option>
         </select>
       </label>
-      <label>Study Duration
+      <label>Study Duration
         <select id="S" class="w-full p-2 border rounded">
-          <option value="0">0‑3 months</option>
-          <option value="1">3‑12 months</option>
-          <option value="2">12‑24 months</option>
-          <option value="3">&gt;24 months</option>
+          <option value="0">0‑3 months</option><option value="1">3‑12 months</option>
+          <option value="2">12‑24 months</option><option value="3">&gt;24 months</option>
         </select>
       </label>
       <label>Visit Frequency
         <select id="F" class="w-full p-2 border rounded">
-          <option value="0">≤1 / month</option>
-          <option value="1">2‑3 / month</option>
-          <option value="2">4‑7 / month</option>
-          <option value="3">≥8 / month</option>
+          <option value="0">≤1 / month</option><option value="1">2‑3 / month</option>
+          <option value="2">4‑7 / month</option><option value="3">≥8 / month</option>
         </select>
       </label>
       <label>Perceived Risk
         <select id="R" class="w-full p-2 border rounded">
-          <option value="0">Minimal</option>
-          <option value="1">Low</option>
-          <option value="2">Moderate</option>
-          <option value="3">High / unknown</option>
+          <option value="0">Minimal</option><option value="1">Low</option>
+          <option value="2">Moderate</option><option value="3">High / unknown</option>
         </select>
       </label>
       <label>Logistical Complexity
         <select id="L" class="w-full p-2 border rounded">
-          <option value="0">None</option>
-          <option value="1">Fasting / eDiary</option>
-          <option value="2">Fasting + eDiary + childcare</option>
-          <option value="3">Home prep + device mgmt</option>
+          <option value="0">None</option><option value="1">Fasting / eDiary</option>
+          <option value="2">Fasting + eDiary + childcare</option>
+          <option value="3">Home prep + device mgmt</option>
         </select>
       </label>
       <label>Radiation Exposure
         <select id="X" class="w-full p-2 border rounded">
-          <option value="0">None</option>
-          <option value="1">Single X‑ray</option>
-          <option value="2">Multiple CT / NM scans</option>
-          <option value="3">PET‑CT (high)</option>
+          <option value="0">None</option><option value="1">Single X‑ray</option>
+          <option value="2">Multiple CT / NM scans</option><option value="3">PET‑CT (high)</option>
         </select>
       </label>
-      <label>Therapeutic Area
-        <select id="TBM" class="w-full p-2 border rounded">
-          <option value="0.75">Oncology / Life‑threatening</option>
-          <option value="1.0" selected>Chronic disease</option>
-          <option value="1.25">Healthy volunteer / Vaccine</option>
+      <label>Study Phase
+        <select id="phase" class="w-full p-2 border rounded">
+          <option value="P1">Phase 1 / Early</option>
+          <option value="P23" selected>Phase 2‑3</option>
         </select>
       </label>
     </div>
@@ -98,7 +86,7 @@
     </div>
   </div>
 
-  <!-- =========  TOGGLE BUTTON  ========= -->
+  <!-- TOGGLE BUTTON -->
   <div class="text-center mb-10">
     <button onclick="toggleDesigner(true)"
             class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded">
@@ -106,29 +94,30 @@
     </button>
   </div>
 
-  <!-- =========  DESIGNER MODE  ========= -->
+  <!-- DESIGNER MODE -->
   <div id="designer" class="hidden card p-6">
-    <!-- step nav -->
+
+    <!-- nav -->
     <div class="flex justify-between mb-6 font-medium">
       <div id="s1tab" class="pill text-purple-700">1⃣ Study Type</div>
       <div id="s2tab" class="pill text-gray-500">2⃣ Attributes</div>
       <div id="s3tab" class="pill text-gray-500">3⃣ Summary</div>
     </div>
 
-    <!-- STEP 1 -->
+    <!-- step 1 -->
     <div id="s1" class="step active">
-      <h2 class="text-xl font-bold mb-4">Pick a Therapeutic Area</h2>
+      <h2 class="text-xl font-bold mb-4">Pick Study Phase + Area</h2>
       <div class="grid grid-cols-3 gap-4">
-        <div class="tile bg-yellow-100" onclick="pickTA(1.0,'Chronic Disease')">💊 Chronic</div>
-        <div class="tile bg-green-100"  onclick="pickTA(1.25,'Vaccine / Healthy')">💉 Vaccine / Healthy</div>
-        <div class="tile bg-red-100"    onclick="pickTA(1.0,'Infectious Disease')">🦠 Infectious Disease</div>
+        <div class="tile bg-red-100"   onclick="pickTA('P1',2.5,'Phase 1')">🧪 Phase 1</div>
+        <div class="tile bg-yellow-100"onclick="pickTA('P23',1,'Chronic')">💊 Chronic (P2‑3)</div>
+        <div class="tile bg-green-100" onclick="pickTA('P23',1,'Vaccine')">💉 Vaccine / Healthy (P2‑3)</div>
+        <div class="tile bg-blue-100"  onclick="pickTA('P23',1,'Infectious')">🦠 Infectious (P2‑3)</div>
       </div>
     </div>
 
-    <!-- STEP 2 -->
+    <!-- step 2 -->
     <div id="s2" class="step">
-      <h2 class="text-xl font-bold mb-4">Select Burden Attributes<br>
-        <span class="text-sm text-gray-500">(click all that apply)</span></h2>
+      <h2 class="text-xl font-bold mb-4">Select Burden Attributes <span class="text-sm text-gray-500">(click all that apply)</span></h2>
       <div id="attrHolder" class="space-y-6"></div>
       <div class="text-right mt-6">
         <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
@@ -136,7 +125,7 @@
       </div>
     </div>
 
-    <!-- STEP 3 -->
+    <!-- step 3 -->
     <div id="s3" class="step text-center">
       <h2 class="text-xl font-bold mb-4">Summary</h2>
       <canvas id="radar" width="380" height="300" class="mx-auto"></canvas>
@@ -148,106 +137,83 @@
 </div>
 
 <script>
-/* ----------   BASIC CALC   ---------- */
-const els = ['I','D','S','F','R','L','X','TBM'].map(id=>document.getElementById(id));
-const resEl=document.getElementById('result');
-function base(I,D,S,F,R,X,L){return 30+20*I+35*D+5*S+5*F+10*R+10*X+10*L}
-function updateCalc(){
-  const vals=els.slice(0,7).map(el=>+el.value),
-        tbm =+document.getElementById('TBM').value,
-        stipend=Math.round(base(...vals)*tbm);
-  resEl.textContent=`Stipend: $${stipend}`;
+/* ---------- Basic calc ---------- */
+const ids=['I','D','S','F','R','L','X','phase'];
+const get  = id=>document.getElementById(id);
+const res  = get('result');
+function Base(I,D,S,F,R,X,L){
+  return 30+20*I+35*D+5*S+5*F+10*R+10*X+10*L;
 }
-document.getElementById('calcBtn').onclick=updateCalc;
-els.forEach(el=>el.addEventListener('change',updateCalc));
+function calc(){
+  const [I,D,S,F,R,L,X] = ids.slice(0,7).map(id=>+get(id).value);
+  const phase = get('phase').value;
+  const base  = Base(I,D,S,F,R,X,L);
+  const stipend = (phase==='P1')
+        ? Math.min(base*2.5,900)
+        : Math.min(base,225);
+  res.textContent=`Stipend: $${Math.round(stipend)}`;
+}
+get('calcBtn').onclick = calc;
+ids.forEach(id=>get(id).addEventListener('change',calc));
 
-/* ----------   DESIGNER  ---------- */
-function $(id){return document.getElementById(id);}
+/* ---------- Designer ---------- */
+const show = id=>get(id).classList.toggle('hidden');
 function toggleDesigner(on){
-  $('calcCard').classList.toggle('hidden',on);
-  $('designer').classList.toggle('hidden',!on);
-  goStep(1);
+  show('calcCard');show('designer');
+  if(on) goStep(1);
 }
 
-/* step handling */
 function goStep(n){
   [1,2,3].forEach(i=>{
-    $('s'+i).classList.toggle('active',i===n);
-    $('s'+i+'tab').classList.toggle('text-purple-700',i===n);
-    $('s'+i+'tab').classList.toggle('text-gray-500',i!==n);
+    get('s'+i).classList.toggle('active',i===n);
+    get('s'+i+'tab').classList.toggle('text-purple-700',i===n);
+    get('s'+i+'tab').classList.toggle('text-gray-500',i!==n);
   });
   if(n===2) buildAttrUI();
   if(n===3) showSummary();
 }
-let taTBM=1, picked={};
-function pickTA(tbm){taTBM=tbm; goStep(2);}
 
-/* attribute library */
-const attrSets={
-  I:{label:'Invasiveness',items:[
-    {txt:'Venepuncture / topical',score:1},
-    {txt:'Core‑needle biopsy',    score:2},
-    {txt:'Surgical implant',      score:3}]},
-  D:{label:'Per‑visit Duration',items:[
-    {txt:'Observation 1‑4 h',     score:1},
-    {txt:'Long infusion 4‑8 h',   score:2},
-    {txt:'Overnight stay ≥24 h',  score:3}]},
-  S:{label:'Study Duration',items:[
-    {txt:'3‑12 months',score:1},{txt:'12‑24 months',score:2},
-    {txt:'>24 months',score:3}]},
-  F:{label:'Visit Frequency',items:[
-    {txt:'Bi‑weekly',score:1},{txt:'Weekly',score:2},{txt:'Daily on‑site',score:3}]},
-  R:{label:'Perceived Risk',items:[
-    {txt:'Topical OTC',score:1},{txt:'Known‑class biologic',score:2},
-    {txt:'First‑in‑class biologic',score:3}]},
-  L:{label:'Logistics',items:[
-    {txt:'Fasting',score:1},{txt:'eDiary',score:1},
-    {txt:'Child‑care',score:2},{txt:'Home prep + device',score:3}]},
-  X:{label:'Radiation',items:[
-    {txt:'Single X‑ray',score:1},{txt:'Multiple CTs',score:2},{txt:'PET‑CT',score:3}]}
-};
+let phaseSel='P23', PM=1, picked={}, chart;
+function pickTA(code,pm,label){phaseSel=code; PM=pm; goStep(2);}
 
+/* burden library */
+const sets={I:{l:'Invasiveness',i:[['Venepuncture',1],['Biopsy',2],['Surgery',3]]},
+D:{l:'Duration',i:[['1‑4 h',1],['4‑8 h',2],['≥24 h',3]]},
+S:{l:'Study length',i:[['3‑12 m',1],['12‑24 m',2],['>24 m',3]]},
+F:{l:'Frequency',i:[['Bi‑weekly',1],['Weekly',2],['Daily',3]]},
+R:{l:'Risk',i:[['Low',1],['Moderate',2],['High',3]]},
+L:{l:'Logistics',i:[['Fasting',1],['Child‑care',2],['Home prep+device',3]]},
+X:{l:'Radiation',i:[['X‑ray',1],['Multi‑CT',2],['PET‑CT',3]]}};
 function buildAttrUI(){
-  picked={}; $('attrHolder').innerHTML='';
-  for(const k in attrSets){
-    const g=attrSets[k];
-    const wrap=document.createElement('div');
-    wrap.innerHTML=`<p class='font-semibold mb-2'>${g.label}</p>`;
+  picked={}; const box=get('attrHolder'); box.innerHTML='';
+  for(const k in sets){
+    const g=sets[k]; const wrap=document.createElement('div');
+    wrap.innerHTML=`<p class='font-semibold mb-2'>${g.l}</p>`;
     const grid=document.createElement('div');grid.className='grid grid-cols-3 gap-2';
-    g.items.forEach(o=>{
+    g.i.forEach(([txt,sc])=>{
       const d=document.createElement('div');
-      d.className='tile border-gray-300'; d.textContent=o.txt;
-      d.dataset.domain=k; d.dataset.score=o.score;
-      d.onclick=()=>toggleTile(d);
-      grid.appendChild(d);
-    });
-    wrap.appendChild(grid); $('attrHolder').appendChild(wrap);
+      d.className='tile border-gray-300';d.textContent=txt;
+      d.dataset.d=k; d.dataset.s=sc;
+      d.onclick=()=>{const on=d.dataset.picked!=='true';
+        d.dataset.picked=on;d.classList.toggle('bg-blue-50',on);
+        d.classList.toggle('border-blue-400',on);
+        picked[k]=[...grid.children].filter(t=>t.dataset.picked==='true')
+                       .reduce((m,t)=>Math.max(m,+t.dataset.s),0);
+      };
+      grid.appendChild(d)});
+    wrap.appendChild(grid); box.appendChild(wrap);
   }
 }
-function toggleTile(div){
-  const dom=div.dataset.domain, sc=+div.dataset.score;
-  const on=div.dataset.picked==='true';
-  div.dataset.picked=(!on).toString();
-  div.classList.toggle('bg-blue-50',!on);
-  div.classList.toggle('border-blue-400',!on);
-  /* recompute domain max */
-  const tiles=[...document.querySelectorAll(`.tile[data-domain='${dom}']`)];
-  const max=tiles.filter(t=>t.dataset.picked==='true')
-                 .reduce((m,t)=>Math.max(m,+t.dataset.score),0);
-  picked[dom]=max;
-}
-
-/* summary + radar */
-let chart;
 function showSummary(){
   const s={I:0,D:0,S:0,F:0,R:0,L:0,X:0,...picked};
-  const stipend=Math.round(base(s.I,s.D,s.S,s.F,s.R,s.X,s.L)*taTBM);
-  $('gStip').textContent=`Stipend: $${stipend}`;
+  const base=Base(s.I,s.D,s.S,s.F,s.R,s.X,s.L);
+  const stipend=(phaseSel==='P1')?Math.min(base*2.5,900):Math.min(base,225);
+  get('gStip').textContent=`Stipend: $${Math.round(stipend)}`;
   const data={labels:['I','D','S','F','R','L','X'],
     datasets:[{data:[s.I,s.D,s.S,s.F,s.R,s.L,s.X],
       backgroundColor:'rgba(0,123,153,0.3)',borderColor:'#007C91',borderWidth:2}]};
   if(chart) chart.destroy();
-  chart=new Chart($('radar'),{type:'radar',data,
+  chart=new Chart(get('radar'),{type:'radar',data,
     options:{scale:{ticks:{beginAtZero:true,max:3,stepSize:1}}}});
 }
 </script>
