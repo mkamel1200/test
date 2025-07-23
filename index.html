@@ -5,233 +5,187 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Patient Stipend Tool</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- radar placeholder -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { background:#f4f7fa }
-    .card   { background:#fff; border-radius:0.75rem; box-shadow:0 4px 10px rgba(0,0,0,.05) }
-    .step   { display:none }
-    .active { display:block }
-    .pill   { cursor:pointer }
+    body {background:#f4f7fa}
+    .card {background:#fff;border-radius:.75rem;box-shadow:0 4px 10px rgba(0,0,0,.05)}
+    .step {display:none}
+    .active {display:block}
+    .pill  {cursor:pointer}
+    .tile  {@apply cursor-pointer p-3 rounded-lg border text-sm flex items-center gap-2}
+    .tile[data-picked="true"]{@apply bg-blue-50 border-blue-400}
   </style>
 </head>
 <body class="font-sans text-gray-800">
-  <div class="max-w-4xl mx-auto p-6">
+<div class="max-w-4xl mx-auto p-6">
+  <h1 class="text-3xl font-bold text-center text-blue-800 mb-8">
+    💊 Patient Stipend Calculator
+  </h1>
 
-    <!-- ===== HEADER ===== -->
-    <h1 class="text-3xl font-bold text-center text-blue-800 mb-8">
-      💊 Patient Stipend Calculator
-    </h1>
+  <!-- ======== DESIGNER CARD ======== -->
+  <div class="card p-6">
 
-    <!-- ===== CALCULATOR CARD ===== -->
-    <div id="calcCard" class="card p-6 mb-8">
-      <div class="grid grid-cols-2 gap-4">
-        <!---- in each <select> the value is the score (0–3)  –-->
-        <label>Invasiveness
-          <select id="I" class="w-full p-2 border rounded">
-            <option value="0">Purely observational</option>
-            <option value="1">Venepuncture / topical</option>
-            <option value="2">Biopsy / lumbar puncture</option>
-            <option value="3">Surgical / first-in-human device</option>
-          </select>
-        </label>
-        <label>Per-visit Duration
-          <select id="D" class="w-full p-2 border rounded">
-            <option value="0">&lt;1 h</option>
-            <option value="1">1–4 h</option>
-            <option value="2">4–8 h</option>
-            <option value="3">≥24 h / overnight</option>
-          </select>
-        </label>
-        <label>Duration of Study
-          <select id="S" class="w-full p-2 border rounded">
-            <option value="0">0–3 months</option>
-            <option value="1">3–12 months</option>
-            <option value="2">12–24 months</option>
-            <option value="3">&gt;24 months</option>
-          </select>
-        </label>
-        <label>Visit Frequency
-          <select id="F" class="w-full p-2 border rounded">
-            <option value="0">≤1 / month</option>
-            <option value="1">2–3 / month</option>
-            <option value="2">4–7 / month</option>
-            <option value="3">≥8 / month</option>
-          </select>
-        </label>
-        <label>Perceived Risk
-          <select id="R" class="w-full p-2 border rounded">
-            <option value="0">Minimal</option>
-            <option value="1">Low</option>
-            <option value="2">Moderate</option>
-            <option value="3">High / unknown</option>
-          </select>
-        </label>
-        <label>Logistical Complexity
-          <select id="L" class="w-full p-2 border rounded">
-            <option value="0">None</option>
-            <option value="1">Fasting or eDiary</option>
-            <option value="2">Fasting + eDiary + childcare</option>
-            <option value="3">Home prep + device mgmt</option>
-          </select>
-        </label>
-        <label>Radiation Exposure
-          <select id="X" class="w-full p-2 border rounded">
-            <option value="0">No radiation exposure</option>
-            <option value="1">Minimal (single X-ray)</option>
-            <option value="2">Moderate (multiple CT / NM scans)</option>
-            <option value="3">High cumulative (PET-CT, repeated WB)</option>
-          </select>
-        </label>
-        <label>Therapeutic Area
-          <select id="TBM" class="w-full p-2 border rounded">
-            <option value="0.75">Oncology / Life-threatening</option>
-            <option value="1.0" selected>Chronic disease</option>
-            <option value="1.25">Healthy volunteer / Vaccine</option>
-          </select>
-        </label>
-      </div>
+    <!-- STEP NAV -->
+    <div class="flex justify-between mb-6 font-medium">
+      <div id="s1tab" class="pill text-purple-700">1⃣ Study Type</div>
+      <div id="s2tab" class="pill text-gray-500">2⃣ Attributes</div>
+      <div id="s3tab" class="pill text-gray-500">3⃣ Summary</div>
+    </div>
 
-      <div class="text-center mt-6">
-        <button id="calcBtn"
-          class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">
-          Calculate
-        </button>
-        <p id="result" class="mt-4 text-2xl font-semibold text-green-700">Stipend: —</p>
+    <!--  STEP 1  -->
+    <div id="s1" class="step active">
+      <h2 class="text-xl font-bold mb-4">Pick a Therapeutic Area</h2>
+      <div class="grid grid-cols-3 gap-4">
+        <div class="tile bg-yellow-100" onclick="pickTA(1.0,'Chronic Disease')">💊 Chronic</div>
+        <div class="tile bg-green-100"  onclick="pickTA(1.25,'Vaccine / Healthy')">💉 Vaccine / Healthy</div>
+        <div class="tile bg-red-100"    onclick="pickTA(1.0,'Infectious Disease')">🦠 Infectious Disease</div>
       </div>
     </div>
 
-    <!-- ===== SWITCH TO GAME ===== -->
-    <div class="text-center mb-10">
-      <button
-        class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded"
-        onclick="showDesigner(true)">
-        🎮 Try Trial Designer Mode
-      </button>
+    <!--  STEP 2  -->
+    <div id="s2" class="step">
+      <h2 class="text-xl font-bold mb-4">Select Burden Attributes<br><span class="text-sm text-gray-500">(click all that apply)</span></h2>
+      <div id="attrHolder" class="space-y-6"></div>
+      <div class="text-right mt-6">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                onclick="goStep(3)">Next →</button>
+      </div>
     </div>
 
-    <!-- ===== TRIAL DESIGNER MODE (STEPPER) ===== -->
-    <div id="designer" class="hidden card p-6">
-      <!-- Step nav -->
-      <div class="flex justify-between mb-6">
-        <div id="step1tab" class="pill font-semibold text-purple-700">1⃣ Study Type</div>
-        <div id="step2tab" class="pill text-gray-500">2⃣ Attributes</div>
-        <div id="step3tab" class="pill text-gray-500">3⃣ Summary</div>
-      </div>
-
-      <!-- Step 1 -->
-      <div id="step1" class="step active">
-        <h2 class="text-xl font-bold mb-4">Choose a Therapeutic Area</h2>
-        <div class="grid grid-cols-3 gap-4">
-          <div onclick="selectTA(0.75,'Oncology')" class="p-4 bg-red-100 rounded-lg pill text-center">🧬 Oncology</div>
-          <div onclick="selectTA(1.0,'Chronic')"  class="p-4 bg-yellow-100 rounded-lg pill text-center">💊 Chronic Disease</div>
-          <div onclick="selectTA(1.25,'Vaccine')" class="p-4 bg-green-100 rounded-lg pill text-center">💉 Vaccine / Healthy</div>
-        </div>
-      </div>
-
-      <!-- Step 2 -->
-      <div id="step2" class="step">
-        <h2 class="text-xl font-bold mb-4">Set Burden Attributes</h2>
-        <p class="mb-2 italic text-sm text-gray-600">Drag sliders or use +/- buttons:</p>
-        <!-- simple sliders -->
-        <div class="space-y-4">
-          <div>Invasiveness (I): <span id="iVal">0</span>
-            <input type="range" id="iRange" min="0" max="3" value="0" class="w-full">
-          </div>
-          <div>Per-visit Duration (D): <span id="dVal">0</span>
-            <input type="range" id="dRange" min="0" max="3" value="0" class="w-full">
-          </div>
-          <div>Study Duration (S): <span id="sVal">0</span>
-            <input type="range" id="sRange" min="0" max="3" value="0" class="w-full">
-          </div>
-          <div>Visit Frequency (F): <span id="fVal">0</span>
-            <input type="range" id="fRange" min="0" max="3" value="0" class="w-full">
-          </div>
-          <div>Perceived Risk (R): <span id="rVal">0</span>
-            <input type="range" id="rRange" min="0" max="3" value="0" class="w-full">
-          </div>
-          <div>Logistics (L): <span id="lVal">0</span>
-            <input type="range" id="lRange" min="0" max="3" value="0" class="w-full">
-          </div>
-          <div>Radiation (X): <span id="xVal">0</span>
-            <input type="range" id="xRange" min="0" max="3" value="0" class="w-full">
-          </div>
-        </div>
-        <div class="text-right mt-4">
-          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-                  onclick="goStep(3)">Next →</button>
-        </div>
-      </div>
-
-      <!-- Step 3 -->
-      <div id="step3" class="step">
-        <h2 class="text-xl font-bold mb-4">Summary & Stipend</h2>
-        <canvas id="radar" width="400" height="300" class="mb-6"></canvas>
-        <p id="gameStipend" class="text-2xl font-semibold text-green-700"></p>
-        <div class="text-right mt-6">
-          <button class="bg-gray-500 text-white px-4 py-2 rounded" onclick="showDesigner(false)">← Back to Calculator</button>
-        </div>
-      </div>
+    <!--  STEP 3  -->
+    <div id="s3" class="step text-center">
+      <h2 class="text-xl font-bold mb-4">Summary</h2>
+      <canvas id="radar" width="380" height="300" class="mx-auto"></canvas>
+      <p id="gStip" class="text-2xl font-semibold text-green-700 mt-4"></p>
+      <button class="mt-6 bg-gray-500 text-white px-4 py-2 rounded"
+              onclick="goStep(1)">← Start Over</button>
     </div>
 
   </div>
+</div>
 
-  <script>
-    /* ----------  CALCULATOR  ---------- */
-    function calcBase(I,D,S,F,R,X,L){return 30+20*I+35*D+5*S+5*F+10*R+10*X+10*L}
-    function updateResult(){const I=+Iel.value,D=+Del.value,S=+Sel.value,F=+Fel.value,
-      R=+Rel.value,X=+Xel.value,L=+Lel.value,TBM=+TBMel.value;
-      const stip=Math.round(calcBase(I,D,S,F,R,X,L)*TBM);
-      res.textContent=`Stipend: $${stip}`;}
-    const Iel = document.getElementById('I'),
-          Del = document.getElementById('D'),
-          Sel = document.getElementById('S'),
-          Fel = document.getElementById('F'),
-          Rel = document.getElementById('R'),
-          Lel = document.getElementById('L'),
-          Xel = document.getElementById('X'),
-          TBMel = document.getElementById('TBM'),
-          res = document.getElementById('result');
-    document.getElementById('calcBtn').addEventListener('click', updateResult);
-    [Iel,Del,Sel,Fel,Rel,Lel,Xel,TBMel].forEach(el=>el.addEventListener('change',updateResult));
+<script>
+/* ---------- attribute library ---------- */
+const attributeSets = {
+  I: { label:'Invasiveness',
+       items:[
+         {txt:'Venepuncture / topical',score:1},
+         {txt:'Core‑needle biopsy',    score:2},
+         {txt:'Surgical implant / explant',score:3}
+       ]},
+  D: { label:'Per‑visit Duration',
+       items:[
+         {txt:'Observation 1‑4 h',    score:1},
+         {txt:'Long infusion 4‑8 h',  score:2},
+         {txt:'Overnight stay ≥24 h', score:3}
+       ]},
+  S: { label:'Study Duration',
+       items:[
+         {txt:'3–12 months', score:1},
+         {txt:'12–24 months',score:2},
+         {txt:'>24 months',  score:3}
+       ]},
+  F: { label:'Visit Frequency',
+       items:[
+         {txt:'Bi‑weekly visits',score:1},
+         {txt:'Weekly visits',  score:2},
+         {txt:'Daily on‑site',  score:3}
+       ]},
+  R: { label:'Perceived Risk',
+       items:[
+         {txt:'Topical OTC',           score:1},
+         {txt:'Known‑class biologic',  score:2},
+         {txt:'First‑in‑class biologic',score:3}
+       ]},
+  L: { label:'Logistics',
+       items:[
+         {txt:'Fasting',                  score:1},
+         {txt:'eDiary',                   score:1},
+         {txt:'Child‑care support',       score:2},
+         {txt:'Home prep + device mgmt',  score:3}
+       ]},
+  X: { label:'Radiation',
+       items:[
+         {txt:'Single X‑ray',     score:1},
+         {txt:'Multiple CT scans',score:2},
+         {txt:'PET‑CT',           score:3}
+       ]}
+};
 
-    /* ----------  DESIGNER MODE  ---------- */
-    let gTBM=1.0, radar, ctx=document.getElementById('radar').getContext('2d');
-    function showDesigner(on){
-      document.getElementById('calcCard').classList.toggle('hidden',on);
-      document.getElementById('designer').classList.toggle('hidden',!on);
-      document.getElementById('step1').classList.add('active'); goStep(1);
-    }
-    function selectTA(tbm,label){
-      gTBM=tbm; document.getElementById('step1tab').classList.add('text-gray-500');
-      goStep(2);
-    }
-    function goStep(n){
-      [1,2,3].forEach(i=>{
-        document.getElementById('step'+i).classList.toggle('active',i===n);
-        document.getElementById('step'+i+'tab').classList.toggle('text-purple-700',i===n);
-        document.getElementById('step'+i+'tab').classList.toggle('text-gray-500',i!==n);
-      });
-      if(n===3){renderSummary();}
-    }
-    const sliders = ['i','d','s','f','r','l','x'];
-    sliders.forEach(prefix=>{
-      const range=document.getElementById(prefix+'Range');
-      const lbl=document.getElementById(prefix+'Val');
-      range.addEventListener('input',()=>{lbl.textContent=range.value});
+let currentTA  = {tbm:1, name:''};
+let picked     = {};       // {I:score, D:score ...}
+let radarChart;
+
+/* ---------- DOM helpers ---------- */
+function $(id){return document.getElementById(id);}
+function goStep(k){
+  [1,2,3].forEach(n=>{
+    $('s'+n).classList.toggle('active',n===k);
+    $('s'+n+'tab').classList.toggle('text-purple-700',n===k);
+    $('s'+n+'tab').classList.toggle('text-gray-500',n!==k);
+  });
+  if(k===2) buildAttrUI();
+  if(k===3) showSummary();
+}
+function pickTA(tbm,name){currentTA={tbm,name}; goStep(2);}
+
+/* ---------- build attribute checklist ---------- */
+function buildAttrUI(){
+  $('attrHolder').innerHTML='';
+  picked={}; // reset
+  for(const key of Object.keys(attributeSets)){
+    const group = attributeSets[key];
+    const wrap = document.createElement('div');
+    wrap.innerHTML=`<p class="font-semibold mb-2">${group.label}</p>`;
+    const grid=document.createElement('div'); grid.className='grid grid-cols-3 gap-2';
+    group.items.forEach((it,i)=>{
+      const div=document.createElement('div');
+      div.className='tile border-gray-300';
+      div.dataset.domain=key;
+      div.dataset.score=it.score;
+      div.onclick=()=>toggleTile(div);
+      div.textContent=it.txt;
+      grid.appendChild(div);
     });
-    function renderSummary(){
-      const vals=sliders.map(p=>+document.getElementById(p+'Range').value);
-      const stipend=Math.round(calcBase(...vals)*gTBM);
-      document.getElementById('gameStipend').textContent=`Estimated Stipend: $${stipend}`;
-      /* radar */
-      const data={
-        labels:['I','D','S','F','R','L','X'],
-        datasets:[{label:'Burden',data:vals,backgroundColor:'rgba(0,123,153,0.3)',
-          borderColor:'#007C91',borderWidth:2,pointRadius:3}]};
-      if(radar) radar.destroy();
-      radar=new Chart(ctx,{type:'radar',data,
-        options:{scale:{ticks:{beginAtZero:true,max:3,stepSize:1}}}});
-    }
-  </script>
+    wrap.appendChild(grid);
+    $('attrHolder').appendChild(wrap);
+  }
+}
+function toggleTile(div){
+  const domain=div.dataset.domain;
+  const score =+div.dataset.score;
+  const pickedNow=div.dataset.picked==='true';
+  if(pickedNow){div.dataset.picked='false';div.classList.remove('bg-blue-50','border-blue-400');}
+  else{div.dataset.picked='true';div.classList.add('bg-blue-50','border-blue-400');}
+  // recompute domain max
+  const tiles=[...document.querySelectorAll(`.tile[data-domain='${domain}']`)];
+  const max=tiles.filter(t=>t.dataset.picked==='true').reduce((m,t)=>Math.max(m,+t.dataset.score),0);
+  picked[domain]=max;
+}
+
+/* ---------- summary step ---------- */
+function calcBase(obj){
+  const {I=0,D=0,S=0,F=0,R=0,X=0,L=0}=obj;
+  return 30+20*I+35*D+5*S+5*F+10*R+10*X+10*L;
+}
+function showSummary(){
+  // ensure every domain present
+  const scores={I:0,D:0,S:0,F:0,R:0,X:0,L:0,...picked};
+  const stipend = Math.round(calcBase(scores)*currentTA.tbm);
+  $('gStip').textContent = `Stipend: $${stipend}`;
+
+  const data = {
+    labels:['I','D','S','F','R','L','X'],
+    datasets:[{label:'Burden',data:[scores.I,scores.D,scores.S,scores.F,scores.R,scores.L,scores.X],
+      backgroundColor:'rgba(0,123,153,0.3)',borderColor:'#007C91',borderWidth:2}]};
+  if(radarChart) radarChart.destroy();
+  radarChart=new Chart($('radar'),{type:'radar',data,
+    options:{scale:{ticks:{beginAtZero:true,max:3,stepSize:1}}}});
+}
+
+/* kick off */
+goStep(1);
+</script>
 </body>
 </html>
+
