@@ -23,7 +23,7 @@
             <option value="0">Purely Observational</option>
             <option value="1">Venepuncture / Topical</option>
             <option value="2">Biopsy / Lumbar Puncture</option>
-            <option value="3">Surgical / First-in-Human</option>
+            <option value="3">Surgical / First-in-Human Device</option>
           </select>
         </label>
         <label>Per-Visit Duration:
@@ -31,7 +31,7 @@
             <option value="0">&lt;1h</option>
             <option value="1">1–4h</option>
             <option value="2">4–8h</option>
-            <option value="3">≥24h</option>
+            <option value="3">≥24h / Overnight</option>
           </select>
         </label>
         <label>Study Duration:
@@ -42,7 +42,7 @@
             <option value="3">&gt;6 Months</option>
           </select>
         </label>
-        <label>Frequency:
+        <label>Visit Frequency:
           <select id="frequency" class="w-full p-2 border rounded">
             <option value="0">≤1/month</option>
             <option value="1">2–3/month</option>
@@ -50,7 +50,7 @@
             <option value="3">≥8/month</option>
           </select>
         </label>
-        <label>Risk:
+        <label>Perceived Risk:
           <select id="risk" class="w-full p-2 border rounded">
             <option value="0">Minimal</option>
             <option value="1">Low</option>
@@ -58,26 +58,26 @@
             <option value="3">High / Unknown</option>
           </select>
         </label>
-        <label>Logistics:
+        <label>Logistical Complexity:
           <select id="logistics" class="w-full p-2 border rounded">
             <option value="0">None</option>
-            <option value="1">Fasting / eDiary</option>
-            <option value="2">Fasting + Childcare</option>
-            <option value="3">Home Prep + Device</option>
+            <option value="1">Fasting or eDiary</option>
+            <option value="2">Fasting + eDiary + Childcare</option>
+            <option value="3">Home Prep + Device Management</option>
           </select>
         </label>
-        <label>Radiation:
+        <label>Radiation Exposure:
           <select id="radiation" class="w-full p-2 border rounded">
             <option value="0">None</option>
-            <option value="1">Low dose imaging</option>
-            <option value="2">Multiple scans</option>
-            <option value="3">Frequent high-dose</option>
+            <option value="1">Low-Dose Imaging</option>
+            <option value="2">Multiple Scans</option>
+            <option value="3">Frequent High-Dose</option>
           </select>
         </label>
         <label>Therapeutic Area:
           <select id="tbm" class="w-full p-2 border rounded">
             <option value="0.75">Oncology / Life-Threatening</option>
-            <option value="1.0">Chronic Condition</option>
+            <option value="1.0">Chronic Disease</option>
             <option value="1.25">Healthy Volunteer / Vaccine</option>
           </select>
         </label>
@@ -96,22 +96,9 @@
     <!-- Game Mode -->
     <div id="game" class="hidden">
       <h2 class="text-2xl font-bold text-purple-800 mb-4">Trial Designer Mode</h2>
-      <div class="grid grid-cols-3 gap-4 mb-6">
-        <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="30">💉 Infusion</div>
-        <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="20">🧪 Imaging</div>
-        <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="25">⏱️ Long Visit</div>
-        <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="15">📓 eDiary</div>
-        <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="10">🛏️ Overnight Stay</div>
-        <div class="bg-white p-4 shadow rounded draggable" draggable="true" data-value="20">🚗 Travel >1hr</div>
-      </div>
-      <div class="dropzone bg-white rounded shadow p-6 text-center">
-        <p class="text-gray-500">Drag & drop trial components here</p>
-        <div id="items" class="mt-4 space-y-2"></div>
-      </div>
+      <!-- (Future enhanced mode coming here) -->
+      <p class="text-center italic text-gray-600">A guided, visual builder will launch here next. Stay tuned.</p>
       <div class="mt-6 text-center">
-        <p class="text-xl font-semibold text-green-700">Estimated Stipend:</p>
-        <p id="stipend" class="text-3xl font-bold text-green-900">$0</p>
-        <p id="comment" class="mt-2 text-sm italic text-gray-600"></p>
         <button onclick="toggleGame(false)" class="mt-4 bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded">🔙 Back to Calculator</button>
       </div>
     </div>
@@ -136,24 +123,7 @@
       document.getElementById("calculator").classList.toggle("hidden", showGame);
       document.getElementById("game").classList.toggle("hidden", !showGame);
     }
-
-    let total = 0;
-    document.querySelectorAll(".draggable").forEach(el => {
-      el.addEventListener("dragstart", e => {
-        e.dataTransfer.setData("value", el.dataset.value);
-        e.dataTransfer.setData("text", el.textContent);
-      });
-    });
-    document.querySelector(".dropzone").addEventListener("dragover", e => e.preventDefault());
-    document.querySelector(".dropzone").addEventListener("drop", e => {
-      e.preventDefault();
-      const val = parseInt(e.dataTransfer.getData("value"));
-      const label = e.dataTransfer.getData("text");
-      document.getElementById("items").insertAdjacentHTML("beforeend", `<div>${label}</div>`);
-      total += val;
-      document.getElementById("stipend").textContent = `$${total}`;
-      document.getElementById("comment").textContent = total < 100 ? "Consider justifying stipend" : total < 175 ? "Stipend looks reasonable" : "IRB may flag this";
-    });
   </script>
 </body>
 </html>
+
