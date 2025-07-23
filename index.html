@@ -1,10 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Patient Stipend Calculator</title>
+  <style>
+    body { font-family: Arial; padding: 2rem; max-width: 600px; margin: auto; }
+    label { display: block; margin-top: 10px; }
+    select, input[type="number"] { width: 100%; padding: 6px; margin-top: 4px; }
+    #result { margin-top: 20px; font-size: 1.2rem; font-weight: bold; }
+  </style>
 </head>
 <body>
-  <h1>Patient Stipend Forecasting Tool</h1>
-  <p>This is a placeholder for your interactive calculator.</p>
-</body>
-</html>
+  <h1>Patient Stipend Calculator</h1>
+
+  <form id="calculatorForm">
+    <label>Invasiveness (I)
+      <select id="I">
+        <option value="0">0 - purely observational</option>
+        <option value="1">1 - venepuncture / topical</option>
+        <option value="2">2 - biopsy / lumbar puncture</option>
+        <option value="3">3 - surgical / first-in-human device</option>
+      </select>
+    </label>
+
+    <label>Per-visit Duration (D)
+      <select id="D">
+        <option value="0">0 - &lt;1h</option>
+        <option value="1">1 - 1–4h</option>
+        <option value="2">2 - 4–8h</option>
+        <option value="3">3 - ≥24h / overnight</option>
+      </select>
+    </label>
+
+    <label>Duration of Study (S)
+      <select id="S">
+        <option value="0">0 - 0–3 months</option>
+        <option value="1">1 - 3–12 months</option>
+        <option value="2">2 - 12–24 months</option>
+        <option value="3">3 - &gt;24 months</option>
+      </select>
+    </label>
+
+    <label>Visit Frequency (F)
+      <select id="F">
+        <option value="0">0 - ≤1 / month</option>
+        <option value="1">1 - 2–3 / month</option>
+        <option value="2">2 - 4–7 / month</option>
+        <option value="3">3 - ≥8 / month</option>
+      </select>
+    </label>
+
+    <label>Perceived Risk (R)
+      <select id="R">
+        <option value="0">0 - minimal</option>
+        <option value="1">1 - low</option>
+        <option value="2">2 - moderate</option>
+        <option value="3">3 - high / unknown</option>
+      </select>
+    </label>
+
+    <label>Radiation (X)
+      <select id="X">
+        <option value="0">0 - none</option>
+        <option value="1">1 - minimal (X-ray)</option>
+        <option value="2">2 - moderate (multiple CTs)</option>
+        <option value="3">3 - high cumulative (PET-CT etc)</option>
+      </select>
+    </label>
+
+    <label>Logistical Complexity (L)
+      <select id="L">
+        <option value="0">0 - none</option>
+        <option value="1">1 - fasting / eDiary</option>
+        <option value="2">2 - eDiary + childcare</option>
+        <option value="3">3 - home prep + device mgmt</option>
+      </select>
+    </label>
+
+    <label>Therapeutic Benefit Modifier (TBM)
+      <select id="TBM">
+        <option value="0.75">0.75 - Oncology / Life-threatening</option>
+        <option value="1.0" selected>1.00 - Chronic disease</option>
+        <option value="1.25">1.25 - Healthy volunteer / Vaccine</option>
+      </select>
+    </label>
+
+    <button type="button" onclick="calculate()">Calculate Stipend</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    function calculate() {
+      const I = parseInt(document.getElementById("I").value);
+      const D = parseInt(document.getElementById("D").value);
+      const S = parseInt(document.getElementById("S").value);
+      const F = parseInt(document.getElementById("F").value);
+      const R = parseInt(document.getElementById("R").value);
+      const X = parseInt(document.getElementById("X").value);
+      const L = parseInt(document.getElementById("L").value);
+      const TBM = parseFloat(document.getElementById("TBM").value);
+
+      const base = 25 + (15 * I) + (30 * D) +
